@@ -1,5 +1,5 @@
 # CV builder
 
-CV builder project for The Odin Project
+Memory card project for The Odin Project
 
-This is to test the first knowledge on React
+This is to further test React focusing on effects.
