@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState } from "react"
+import Header from "./Header"
 
 function App() {
 
@@ -6,7 +7,7 @@ function App() {
 
   return (
     <>
-      <h1>Hello World</h1>
+      <Header/>
     </>
   )
 }
