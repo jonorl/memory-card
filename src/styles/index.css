@@ -63,3 +63,33 @@ body {
   justify-self: end;
   margin-right: 5vw;
 }
+
+.pokemon-name::first-letter {
+  text-transform: capitalize;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
+  grid-template-rows: auto auto;
+  gap: 2em;
+}
+
+.cards>div {
+  border: solid 2px whitesmoke;
+}
+
+.cards>div>img{
+  max-width: 17vw;
+}
+
+.cards>div>p{
+  font-size: 30px;
+}
+
+.loading {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  font-size: 100px;
+}

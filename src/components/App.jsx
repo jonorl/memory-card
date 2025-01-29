@@ -5,14 +5,17 @@ import Cards from "./Cards"
 function App() {
 
   const pokemonArray = [1, 4, 7, 16, 25, 39, 54, 79, 129, 132]
+  let pokemonImgArray = [];
+  let pokemonNameArray = [];
+
 
   const [pokemon, setPokemon] = useState(pokemonArray)
-  const [img, setImg] = useState(null);
+  const [img, setImg] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [pokemonName, setPokemonName] = useState(null)
+  const [pokemonName, setPokemonName] = useState([])
 
 
-  function shuffleArray(array) {
+  const shuffleArray = function shuffleArray(array) {
     const newArray = [...array]; // Create a copy of the original array
 
     for (let i = newArray.length - 1; i > 0; i--) {
@@ -25,44 +28,52 @@ function App() {
   let newArray = shuffleArray(pokemonArray)
   console.log(newArray)
 
+  // testing map function
+
+
+  // Create a new array by mapping through existing entries
   useEffect(() => {
+
     const fetchData = async () => {
 
       try {
-        const [imageResponse, pokemonResponse] = await Promise.all([
-          fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newArray[0]}.png`),
-          fetch(`https://pokeapi.co/api/v2/pokemon/${newArray[0]}`, {mode: "cors"})
-        ]);
+        setLoading(true);
 
-        const pokeImg = await imageResponse
-        const pokeName = await pokemonResponse.json()
-        setImg(pokeImg.url)
-        setPokemonName(pokeName.name)
+        const fetchPromises = pokemonArray.map(async (pokemon, index) => {
+          const [imageResponse, pokemonResponse] = await Promise.all([
+            fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newArray[index]}.png`),
+            fetch(`https://pokeapi.co/api/v2/pokemon/${newArray[index]}`, { mode: "cors" })
+          ]);
+
+          const pokeImg = imageResponse
+          const pokeName = await pokemonResponse.json()
+
+          return {
+            imageUrl: pokeImg.url,
+            name: pokeName.name
+          };
+        });
+
+        const results = await Promise.all(fetchPromises);
+        setImg(results.map(result => result.imageUrl));
+        setPokemonName(results.map(result => result.name));
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
+
   }, []);
 
-  console.log(pokemonName)
-
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="loading">Loading...</div>;
   }
-
-  // fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newArray[0]}.png`)
-  //   .then(response => {
-  //     return img = response;
-  //   })
-  // fetch(`https://pokeapi.co/api/v2/pokemon/${newArray[0]}`)
-
-  // Render and passing props to components
 
   return (
     <>
       <Header />
-      <Cards img={img} pokemonName={pokemonName} />
+      <Cards img={img} pokemonName={pokemonName} shuffleArray={shuffleArray(pokemonArray)} />
     </>
   )
 }
