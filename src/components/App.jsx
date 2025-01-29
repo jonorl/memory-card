@@ -14,6 +14,39 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [pokemonName, setPokemonName] = useState([])
 
+  function sufflePokemonRender() {
+    setPokemon(pokemonArray);
+    console.log("placeholder")
+    const fetchData = async () => {
+
+      try {
+        setLoading(true);
+
+        const fetchPromises = pokemonArray.map(async (pokemon, index) => {
+          const [imageResponse, pokemonResponse] = await Promise.all([
+            fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newArray[index]}.png`),
+            fetch(`https://pokeapi.co/api/v2/pokemon/${newArray[index]}`, { mode: "cors" })
+          ]);
+
+          const pokeImg = imageResponse
+          const pokeName = await pokemonResponse.json()
+
+          return {
+            imageUrl: pokeImg.url,
+            name: pokeName.name
+          };
+        });
+
+        const results = await Promise.all(fetchPromises);
+        setImg(results.map(result => result.imageUrl));
+        setPokemonName(results.map(result => result.name));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }
+
 
   const shuffleArray = function shuffleArray(array) {
     const newArray = [...array]; // Create a copy of the original array
@@ -26,7 +59,7 @@ function App() {
   }
 
   let newArray = shuffleArray(pokemonArray)
-  console.log(newArray)
+
 
   // testing map function
 
@@ -73,7 +106,7 @@ function App() {
   return (
     <>
       <Header />
-      <Cards img={img} pokemonName={pokemonName} shuffleArray={shuffleArray(pokemonArray)} />
+      <Cards img={img} pokemonName={pokemonName} shuffleArray={shuffleArray(pokemonArray)} sufflePokemonRender={sufflePokemonRender} />
     </>
   )
 }
