@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import App from './App'
 
-export default function Cards() {
-    console.log(App.img)
+export default function Cards({data}) {
+    console.log(App.data)
     return (
         <div className="cards">
             <div className="card0">
-                <img src={App.img} />
+                <img src={data} />
             </div>
             <div className="card1">{ }</div>
             <div className="card2">{ }</div>
