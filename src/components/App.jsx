@@ -13,8 +13,10 @@ function App() {
   const [img, setImg] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pokemonName, setPokemonName] = useState([])
+  const [pokeNumber, setPokeNumber] = useState(null)
 
-  function sufflePokemonRender() {
+  function sufflePokemonRender(event) {
+    console.log(event)
     setPokemon(pokemonArray);
     console.log("placeholder")
     const fetchData = async () => {
@@ -72,24 +74,29 @@ function App() {
       try {
         setLoading(true);
 
-        const fetchPromises = pokemonArray.map(async (pokemon, index) => {
+        const fetchPromises = newArray.map(async (pokemon, index) => {
           const [imageResponse, pokemonResponse] = await Promise.all([
             fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newArray[index]}.png`),
-            fetch(`https://pokeapi.co/api/v2/pokemon/${newArray[index]}`, { mode: "cors" })
+            fetch(`https://pokeapi.co/api/v2/pokemon/${newArray[index]}`, { mode: "cors" }),
           ]);
 
           const pokeImg = imageResponse
           const pokeName = await pokemonResponse.json()
+          const pknum = pokemon
+
+          console.log(typeof(pokemon))
 
           return {
             imageUrl: pokeImg.url,
-            name: pokeName.name
+            name: pokeName.name,
+            number: pknum
           };
         });
 
         const results = await Promise.all(fetchPromises);
         setImg(results.map(result => result.imageUrl));
         setPokemonName(results.map(result => result.name));
+        setPokeNumber(results.map(result => result.number));
       } finally {
         setLoading(false);
       }
@@ -106,7 +113,7 @@ function App() {
   return (
     <>
       <Header />
-      <Cards img={img} pokemonName={pokemonName} shuffleArray={shuffleArray(pokemonArray)} sufflePokemonRender={sufflePokemonRender} />
+      <Cards img={img} pokemonName={pokemonName} shuffleArray={shuffleArray(pokemonArray)} pokeNumber={pokeNumber} sufflePokemonRender={sufflePokemonRender} />
     </>
   )
 }
