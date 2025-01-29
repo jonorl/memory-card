@@ -7,8 +7,9 @@ function App() {
   const pokemonArray = [1, 4, 7, 16, 25, 39, 54, 79, 129, 132]
 
   const [pokemon, setPokemon] = useState(pokemonArray)
-  const [data, setData] = useState(null);
+  const [img, setImg] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [pokemonName, setPokemonName] = useState(null)
 
 
   function shuffleArray(array) {
@@ -26,10 +27,17 @@ function App() {
 
   useEffect(() => {
     const fetchData = async () => {
+
       try {
-        const response = fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newArray[0]}.png`);
-        const pokeImg = await response
-        setData(pokeImg.url)
+        const [imageResponse, pokemonResponse] = await Promise.all([
+          fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newArray[0]}.png`),
+          fetch(`https://pokeapi.co/api/v2/pokemon/${newArray[0]}`, {mode: "cors"})
+        ]);
+
+        const pokeImg = await imageResponse
+        const pokeName = await pokemonResponse.json()
+        setImg(pokeImg.url)
+        setPokemonName(pokeName.name)
       } finally {
         setLoading(false);
       }
@@ -37,11 +45,11 @@ function App() {
     fetchData();
   }, []);
 
+  console.log(pokemonName)
+
   if (loading) {
     return <div>Loading...</div>;
   }
-
-  console.log(data)
 
   // fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newArray[0]}.png`)
   //   .then(response => {
@@ -54,7 +62,7 @@ function App() {
   return (
     <>
       <Header />
-      <Cards data={data} />
+      <Cards img={img} pokemonName={pokemonName} />
     </>
   )
 }

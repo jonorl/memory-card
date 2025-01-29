@@ -1,12 +1,9 @@
-import { useState } from 'react'
-import App from './App'
-
-export default function Cards({data}) {
-    console.log(App.data)
+export default function Cards({img, pokemonName}) {
     return (
         <div className="cards">
             <div className="card0">
-                <img src={data} />
+                <img src={img} />
+                <p>{pokemonName}</p>
             </div>
             <div className="card1">{ }</div>
             <div className="card2">{ }</div>
