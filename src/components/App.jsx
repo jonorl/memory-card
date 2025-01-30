@@ -7,13 +7,22 @@ function App() {
   const pokemonArray = [1, 4, 7, 16, 25, 39, 54, 79, 129, 132]
   let pokemonImgArray = [];
   let pokemonNameArray = [];
-
+  let selectedPokemonArray = []
 
   const [pokemon, setPokemon] = useState(pokemonArray)
   const [img, setImg] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pokemonName, setPokemonName] = useState([])
   const [pokeNumber, setPokeNumber] = useState(null)
+
+  function keepScore(num) {
+    console.log(selectedPokemonArray)
+    if(selectedPokemonArray.includes(num)){
+      console.log("game over, reset")
+    }
+    else selectedPokemonArray.push(num)
+    console.log(selectedPokemonArray)
+  }
 
   function sufflePokemonRender(event) {
     console.log(event)
@@ -25,23 +34,25 @@ function App() {
         setLoading(true);
 
         const fetchPromises = pokemonArray.map(async (pokemon, index) => {
-          const [imageResponse, pokemonResponse] = await Promise.all([
+          const [imageResponse, pokemonData] = await Promise.all([
             fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newArray[index]}.png`),
             fetch(`https://pokeapi.co/api/v2/pokemon/${newArray[index]}`, { mode: "cors" })
           ]);
 
           const pokeImg = imageResponse
-          const pokeName = await pokemonResponse.json()
+          const pokeData = await pokemonData.json()
 
           return {
             imageUrl: pokeImg.url,
-            name: pokeName.name
+            name: pokeData.name,
+            number: pokeData.id
           };
         });
 
         const results = await Promise.all(fetchPromises);
         setImg(results.map(result => result.imageUrl));
         setPokemonName(results.map(result => result.name));
+        setPokeNumber(results.map(result => result.number));
       } finally {
         setLoading(false);
       }
@@ -62,10 +73,6 @@ function App() {
 
   let newArray = shuffleArray(pokemonArray)
 
-
-  // testing map function
-
-
   // Create a new array by mapping through existing entries
   useEffect(() => {
 
@@ -75,21 +82,18 @@ function App() {
         setLoading(true);
 
         const fetchPromises = newArray.map(async (pokemon, index) => {
-          const [imageResponse, pokemonResponse] = await Promise.all([
+          const [imageResponse, pokemonData] = await Promise.all([
             fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newArray[index]}.png`),
             fetch(`https://pokeapi.co/api/v2/pokemon/${newArray[index]}`, { mode: "cors" }),
           ]);
 
           const pokeImg = imageResponse
-          const pokeName = await pokemonResponse.json()
-          const pknum = pokemon
-
-          console.log(typeof(pokemon))
+          const pokeData = await pokemonData.json()
 
           return {
             imageUrl: pokeImg.url,
-            name: pokeName.name,
-            number: pknum
+            name: pokeData.name,
+            number: pokeData.id
           };
         });
 
@@ -113,7 +117,7 @@ function App() {
   return (
     <>
       <Header />
-      <Cards img={img} pokemonName={pokemonName} shuffleArray={shuffleArray(pokemonArray)} pokeNumber={pokeNumber} sufflePokemonRender={sufflePokemonRender} />
+      <Cards img={img} pokemonName={pokemonName} shuffleArray={shuffleArray(pokemonArray)} keepScore={keepScore} pokeNumber={pokeNumber} sufflePokemonRender={sufflePokemonRender} />
     </>
   )
 }

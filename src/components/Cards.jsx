@@ -1,10 +1,11 @@
-export default function Cards({ img, pokemonName, sufflePokemonRender, pokeNumber }) {
+export default function Cards({ img, pokemonName, sufflePokemonRender, keepScore, pokeNumber }) {
     console.log(pokeNumber)
     return (
         <div className="cards" >
             {pokemonName.length > 9 && (
                 <>
                     <div onClick={(e) => {
+                        keepScore(pokeNumber[0])
                         sufflePokemonRender(e);
                     }}  className="card0">
                         <img src={img[0]} />
