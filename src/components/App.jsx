@@ -2,11 +2,13 @@ import { useState, useEffect } from "react"
 import Header from "./Header"
 import Cards from "./Cards"
 
+const pokemonArray = [1, 4, 7, 16, 25, 39, 54, 79, 129, 132] // Selected 10 specific pokemons (ids)
+
 function App() {
 
   // Props
 
-  const pokemonArray = [1, 4, 7, 16, 25, 39, 54, 79, 129, 132] // Selected 10 specific pokemons (ids)
+
   const [selectedPokemonArray, setSelectedPokemonArray] = useState([]) // Array to keep track of scoring
   const [currentScore, setCurrentScore] = useState(0)
   const [highScore, setHighScore] = useState(0)
@@ -14,6 +16,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [pokemonName, setPokemonName] = useState([])
   const [pokeNumber, setPokeNumber] = useState(null)
+  const [triggerShuffle, setTriggerShuffle] = useState(false);
 
   // Function to keep track of current and high score
 
@@ -31,7 +34,7 @@ function App() {
     // Otherwise add the pokemon id into the array and add a score
 
     else {
-      selectedPokemonArray.push(num);
+      setSelectedPokemonArray([...selectedPokemonArray, num])
       setCurrentScore(currentScore + 1);
       if (highScore <= currentScore) {
         setHighScore(currentScore + 1)
@@ -45,49 +48,60 @@ function App() {
 
   // Function to get the API image, name and id data to pass it as props.
 
-  function sufflePokemonRender() {
-    const fetchData = async () => {
+  // 
 
-      try {
-        setLoading(true);
 
-        // callback function to fetch all the data from APIs (two different API sources)
 
-        const fetchPromises = pokemonArray.map(async (pokemon, index) => {
-          const [imageResponse, pokemonData] = await Promise.all([
-            fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newArray[index]}.png`),
-            fetch(`https://pokeapi.co/api/v2/pokemon/${newArray[index]}`, { mode: "cors" })
-          ]);
+  useEffect(() => {
+    function shufflePokemonRender() {
+      const newArray = shuffleArray(pokemonArray)
 
-          const pokeImg = imageResponse
-          const pokeData = await pokemonData.json()
+      const fetchData = async () => {
 
-          return {
-            imageUrl: pokeImg.url,
-            name: pokeData.name,
-            number: pokeData.id
-          };
-        });
+        try {
+          setLoading(true);
 
-        // Trigger the data fetching function
+          // callback function to fetch all the data from APIs (two different API sources)
 
-        const results = await Promise.all(fetchPromises);
+          const fetchPromises = pokemonArray.map(async (pokemon, index) => {
+            const [imageResponse, pokemonData] = await Promise.all([
+              fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newArray[index]}.png`),
+              fetch(`https://pokeapi.co/api/v2/pokemon/${newArray[index]}`, { mode: "cors" })
+            ]);
 
-        // Assign API data to props.
+            const pokeImg = imageResponse
+            const pokeData = await pokemonData.json()
 
-        setImg(results.map(result => result.imageUrl));
-        setPokemonName(results.map(result => result.name));
-        setPokeNumber(results.map(result => result.number));
+            return {
+              imageUrl: pokeImg.url,
+              name: pokeData.name,
+              number: pokeData.id
+            };
+          });
 
-      } finally {
-        setLoading(false);
-      }
-    };
+          // Trigger the data fetching function
 
-    // Trigger the function
+          const results = await Promise.all(fetchPromises);
 
-    fetchData();
-  }
+          // Assign API data to props.
+
+          setImg(results.map((result) => result.imageUrl));
+          setPokemonName(results.map((result) => result.name));
+          setPokeNumber(results.map((result) => result.number));
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
+    }
+
+    shufflePokemonRender();
+  }, [triggerShuffle]);
+
+  const handleShuffle = () => {
+    setTriggerShuffle(!triggerShuffle);
+  };
 
   // Function to shuffle the pokemon array to make it random upon every click/render this is triggered at the
   // moment of passing the prop to the child
@@ -104,13 +118,11 @@ function App() {
 
   // Create a new array by mapping through existing entries
 
-  useEffect(() => {
-    sufflePokemonRender()
-  }, []);
+
 
   // Trigger the pokemon shuffle.
 
-  let newArray = shuffleArray(pokemonArray)
+
 
   // Helper to display loading of API elements.
 
@@ -123,7 +135,7 @@ function App() {
   return (
     <>
       <Header currentScore={currentScore} highScore={highScore} />
-      <Cards img={img} pokemonName={pokemonName} shuffleArray={shuffleArray(pokemonArray)} keepScore={keepScore} pokeNumber={pokeNumber} sufflePokemonRender={sufflePokemonRender} />
+      <Cards img={img} pokemonName={pokemonName} shuffleArray={shuffleArray} keepScore={keepScore} pokeNumber={pokeNumber} handleShuffle={handleShuffle} />
     </>
   )
 }
