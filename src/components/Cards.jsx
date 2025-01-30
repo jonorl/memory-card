@@ -1,5 +1,4 @@
 export default function Cards({ img, pokemonName, sufflePokemonRender, keepScore, pokeNumber }) {
-    console.log(pokeNumber)
     return (
         <div className="cards" >
             {pokemonName.length > 9 && (

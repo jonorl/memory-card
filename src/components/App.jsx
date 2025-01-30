@@ -5,11 +5,11 @@ import Cards from "./Cards"
 function App() {
 
   const pokemonArray = [1, 4, 7, 16, 25, 39, 54, 79, 129, 132]
-  let pokemonImgArray = [];
-  let pokemonNameArray = [];
-  let selectedPokemonArray = []
+  const [selectedPokemonArray, setSelectedPokemonArray] = useState([])
 
   const [pokemon, setPokemon] = useState(pokemonArray)
+  const [currentScore, setCurrentScore] = useState(0)
+  const [highScore, setHighScore] = useState(0)
   const [img, setImg] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pokemonName, setPokemonName] = useState([])
@@ -17,11 +17,24 @@ function App() {
 
   function keepScore(num) {
     console.log(selectedPokemonArray)
-    if(selectedPokemonArray.includes(num)){
+    if (selectedPokemonArray.includes(num)) {
+      setCurrentScore(0);
       console.log("game over, reset")
     }
-    else selectedPokemonArray.push(num)
-    console.log(selectedPokemonArray)
+    else {
+      selectedPokemonArray.push(num);
+      setCurrentScore(currentScore + 1);
+      if (highScore < currentScore) {
+        setHighScore(currentScore)
+      }
+      console.log(selectedPokemonArray)
+      console.log(currentScore)
+      console.log(highScore)
+    }
+    return (
+      currentScore,
+      highScore
+    )
   }
 
   function sufflePokemonRender(event) {
@@ -116,7 +129,7 @@ function App() {
 
   return (
     <>
-      <Header />
+      <Header currentScore={currentScore} highScore={highScore}/>
       <Cards img={img} pokemonName={pokemonName} shuffleArray={shuffleArray(pokemonArray)} keepScore={keepScore} pokeNumber={pokeNumber} sufflePokemonRender={sufflePokemonRender} />
     </>
   )
