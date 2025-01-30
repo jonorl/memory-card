@@ -37,8 +37,7 @@ function App() {
     )
   }
 
-  function sufflePokemonRender(event) {
-    console.log(event)
+  function sufflePokemonRender() {
     setPokemon(pokemonArray);
     console.log("placeholder")
     const fetchData = async () => {
