@@ -2,12 +2,13 @@ import { useState, useEffect } from "react"
 import Header from "./Header"
 import Cards from "./Cards"
 
+// THIS ARRAY NEEDED TO BE OUTSIDE OF THE COMPONENT - It threw all sort of weird errors in the linter when inside.
+
 const pokemonArray = [1, 4, 7, 16, 25, 39, 54, 79, 129, 132] // Selected 10 specific pokemons (ids)
 
 function App() {
 
   // Props
-
 
   const [selectedPokemonArray, setSelectedPokemonArray] = useState([]) // Array to keep track of scoring
   const [currentScore, setCurrentScore] = useState(0)
@@ -27,14 +28,12 @@ function App() {
     if (selectedPokemonArray.includes(num)) {
       setCurrentScore(0);
       setSelectedPokemonArray([])
-      console.log(selectedPokemonArray)
-      console.log("game over, reset")
     }
 
     // Otherwise add the pokemon id into the array and add a score
 
     else {
-      setSelectedPokemonArray([...selectedPokemonArray, num])
+      setSelectedPokemonArray([...selectedPokemonArray, num]) // Apparently it's best practice to do this than a push
       setCurrentScore(currentScore + 1);
       if (highScore <= currentScore) {
         setHighScore(currentScore + 1)
@@ -46,15 +45,14 @@ function App() {
     )
   }
 
-  // Function to get the API image, name and id data to pass it as props.
-
-  // 
-
-
-
   useEffect(() => {
+
+    // Render the shuffle
+
     function shufflePokemonRender() {
       const newArray = shuffleArray(pokemonArray)
+
+      // Function to get the API image, name and id data to pass it as props.
 
       const fetchData = async () => {
 
@@ -97,7 +95,11 @@ function App() {
     }
 
     shufflePokemonRender();
+
+    // Set dependency - the rendering stops as soon as triggerShuffle (bool) changes
   }, [triggerShuffle]);
+
+  // function to pass to child to run onClick, it changes the triggerShuffle starting/stopping shufflePokemonRender
 
   const handleShuffle = () => {
     setTriggerShuffle(!triggerShuffle);
@@ -116,14 +118,6 @@ function App() {
     return newArray;
   }
 
-  // Create a new array by mapping through existing entries
-
-
-
-  // Trigger the pokemon shuffle.
-
-
-
   // Helper to display loading of API elements.
 
   if (loading) {
@@ -135,7 +129,7 @@ function App() {
   return (
     <>
       <Header currentScore={currentScore} highScore={highScore} />
-      <Cards img={img} pokemonName={pokemonName} shuffleArray={shuffleArray} keepScore={keepScore} pokeNumber={pokeNumber} handleShuffle={handleShuffle} />
+      <Cards img={img} pokemonName={pokemonName} keepScore={keepScore} pokeNumber={pokeNumber} handleShuffle={handleShuffle} />
     </>
   )
 }

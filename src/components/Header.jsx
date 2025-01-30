@@ -1,4 +1,4 @@
-export default function Header({currentScore, highScore}) {
+export default function Header({ currentScore, highScore }) {
 
     return (
         <div className="header">
