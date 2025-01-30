@@ -4,10 +4,10 @@ import Cards from "./Cards"
 
 function App() {
 
-  const pokemonArray = [1, 4, 7, 16, 25, 39, 54, 79, 129, 132]
-  const [selectedPokemonArray, setSelectedPokemonArray] = useState([])
+  // Props
 
-  const [pokemon, setPokemon] = useState(pokemonArray)
+  const pokemonArray = [1, 4, 7, 16, 25, 39, 54, 79, 129, 132] // Selected 10 specific pokemons (ids)
+  const [selectedPokemonArray, setSelectedPokemonArray] = useState([]) // Array to keep track of scoring
   const [currentScore, setCurrentScore] = useState(0)
   const [highScore, setHighScore] = useState(0)
   const [img, setImg] = useState([]);
@@ -15,14 +15,21 @@ function App() {
   const [pokemonName, setPokemonName] = useState([])
   const [pokeNumber, setPokeNumber] = useState(null)
 
+  // Function to keep track of current and high score
+
   function keepScore(num) {
-    console.log(selectedPokemonArray)
+
+    // If pokemon exists in array, reset the game and the array.
+
     if (selectedPokemonArray.includes(num)) {
       setCurrentScore(0);
       setSelectedPokemonArray([])
       console.log(selectedPokemonArray)
       console.log("game over, reset")
     }
+
+    // Otherwise add the pokemon id into the array and add a score
+
     else {
       selectedPokemonArray.push(num);
       setCurrentScore(currentScore + 1);
@@ -36,12 +43,15 @@ function App() {
     )
   }
 
+  // Function to get the API image, name and id data to pass it as props.
+
   function sufflePokemonRender() {
-    setPokemon(pokemonArray);
     const fetchData = async () => {
 
       try {
         setLoading(true);
+
+        // callback function to fetch all the data from APIs (two different API sources)
 
         const fetchPromises = pokemonArray.map(async (pokemon, index) => {
           const [imageResponse, pokemonData] = await Promise.all([
@@ -59,17 +69,28 @@ function App() {
           };
         });
 
+        // Trigger the data fetching function
+
         const results = await Promise.all(fetchPromises);
+
+        // Assign API data to props.
+
         setImg(results.map(result => result.imageUrl));
         setPokemonName(results.map(result => result.name));
         setPokeNumber(results.map(result => result.number));
+
       } finally {
         setLoading(false);
       }
     };
+
+    // Trigger the function
+
     fetchData();
   }
 
+  // Function to shuffle the pokemon array to make it random upon every click/render this is triggered at the
+  // moment of passing the prop to the child
 
   const shuffleArray = function shuffleArray(array) {
     const newArray = [...array]; // Create a copy of the original array
@@ -81,20 +102,27 @@ function App() {
     return newArray;
   }
 
-  let newArray = shuffleArray(pokemonArray)
-
   // Create a new array by mapping through existing entries
+
   useEffect(() => {
     sufflePokemonRender()
   }, []);
+
+  // Trigger the pokemon shuffle.
+
+  let newArray = shuffleArray(pokemonArray)
+
+  // Helper to display loading of API elements.
 
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
 
+  // Render
+
   return (
     <>
-      <Header currentScore={currentScore} highScore={highScore}/>
+      <Header currentScore={currentScore} highScore={highScore} />
       <Cards img={img} pokemonName={pokemonName} shuffleArray={shuffleArray(pokemonArray)} keepScore={keepScore} pokeNumber={pokeNumber} sufflePokemonRender={sufflePokemonRender} />
     </>
   )
