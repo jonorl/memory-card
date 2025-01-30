@@ -19,17 +19,16 @@ function App() {
     console.log(selectedPokemonArray)
     if (selectedPokemonArray.includes(num)) {
       setCurrentScore(0);
+      setSelectedPokemonArray([])
+      console.log(selectedPokemonArray)
       console.log("game over, reset")
     }
     else {
       selectedPokemonArray.push(num);
       setCurrentScore(currentScore + 1);
-      if (highScore < currentScore) {
-        setHighScore(currentScore)
+      if (highScore <= currentScore) {
+        setHighScore(currentScore + 1)
       }
-      console.log(selectedPokemonArray)
-      console.log(currentScore)
-      console.log(highScore)
     }
     return (
       currentScore,
@@ -39,7 +38,6 @@ function App() {
 
   function sufflePokemonRender() {
     setPokemon(pokemonArray);
-    console.log("placeholder")
     const fetchData = async () => {
 
       try {
@@ -87,39 +85,7 @@ function App() {
 
   // Create a new array by mapping through existing entries
   useEffect(() => {
-
-    const fetchData = async () => {
-
-      try {
-        setLoading(true);
-
-        const fetchPromises = newArray.map(async (pokemon, index) => {
-          const [imageResponse, pokemonData] = await Promise.all([
-            fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newArray[index]}.png`),
-            fetch(`https://pokeapi.co/api/v2/pokemon/${newArray[index]}`, { mode: "cors" }),
-          ]);
-
-          const pokeImg = imageResponse
-          const pokeData = await pokemonData.json()
-
-          return {
-            imageUrl: pokeImg.url,
-            name: pokeData.name,
-            number: pokeData.id
-          };
-        });
-
-        const results = await Promise.all(fetchPromises);
-        setImg(results.map(result => result.imageUrl));
-        setPokemonName(results.map(result => result.name));
-        setPokeNumber(results.map(result => result.number));
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-
+    sufflePokemonRender()
   }, []);
 
   if (loading) {
